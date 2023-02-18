@@ -1,5 +1,13 @@
-from uvicorn_requests.requests import Request
-from uvicorn_requests.responses import Response
+from uvicorn_requests.http.requests import Request
+from uvicorn_requests.routers.router import Router
+from uvicorn_requests.routers.route import Route
+
+from .viewsets import HomePageViewSet
+
+
+routes = [
+    Route(r'', HomePageViewSet, name='home'),
+]
 
 
 async def app(scope, receive, send):
@@ -8,14 +16,9 @@ async def app(scope, receive, send):
 
     assert request.type == 'http'
 
-    response = Response(
-        request,
-        'Hello, world!',
-        status=200,
-        headers = {
-            'content-type': 'text/plain'
-        }
-    )
+    response = Router(
+        routes=routes
+    ).get_reponse(request)
 
     await send(response.start)
     await send(response.body)
