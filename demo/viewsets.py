@@ -1,6 +1,5 @@
 from typing import Type
 
-from uvicorn_requests.http.responses import TemplateResponse
 from uvicorn_requests.viewsets.viewset import ViewSet
 
 
@@ -11,4 +10,8 @@ class HomePageViewSet(ViewSet):
         request: Type
     ):
 
-        return TemplateResponse(request, '<h1>Hello world</h1>')
+        return self.render(
+            request,
+            'base.html',
+            context=self.get_context(),
+        )

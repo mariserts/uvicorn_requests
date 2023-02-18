@@ -14,10 +14,17 @@ class Router:
 
     def __init__(
         self: Type,
-        routes: List = []
+        routes: List[Type],
     ) -> None:
 
-        self.routes = routes
+        self._routes = routes
+
+    @property
+    def routes(
+        self: Type
+    ) -> List[Type]:
+
+        return self._routes
 
     def reverse(
         self: Type,
@@ -78,7 +85,15 @@ class Router:
 
         try:
             response = getattr(
-                view(request), request.method)(request, **kwargs)
+                view(
+                    request
+                ),
+                request.method
+            )(
+                request,
+                **kwargs
+            )
+
         except Exception as e:
             return ServerErrorResponse(str(e))
 

@@ -1,4 +1,4 @@
-from typing import Type
+from typing import List, Type
 
 from uuid import uuid4
 from urllib import parse
@@ -12,9 +12,14 @@ class Request:
         self: Type,
         scope: dict,
         body: bytes,
+        encoding: str = 'utf-8',
+        template_paths: List[str] = [],
     ):
-        self._scope = scope
+
         self._body = body
+        self._encoding = encoding
+        self._scope = scope
+        self._template_paths = template_paths
 
     @property
     def body(self):
@@ -46,9 +51,6 @@ class Request:
     @property
     def cookies(self):
 
-        if self.__cookies is not None:
-            return self.__cookies
-
         value = self.headers.get('cookie', '')
         _cookies = value.split(';')
 
@@ -59,9 +61,11 @@ class Request:
                 parts = cookie.split('=')
                 cookies[parts[0].strip()] = parts[1].strip()
 
-        self.__cookies = cookies
+        return cookies
 
-        return self.__cookies
+    @property
+    def encoding(self):
+        return self._encoding
 
     @property
     def headers(self):
@@ -84,6 +88,10 @@ class Request:
     @property
     def path(self):
         return self._scope['path']
+
+    @property
+    def template_paths(self):
+        return self._template_paths
 
     @property
     def type(self):

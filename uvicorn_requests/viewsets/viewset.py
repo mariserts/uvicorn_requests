@@ -1,6 +1,6 @@
 from typing import List, Type
 
-from ..http.responses import NotImplementedResponse
+from ..http.responses import NotImplementedResponse, TemplateResponse
 
 
 class ViewSet:
@@ -26,7 +26,7 @@ class ViewSet:
 
     def __init__(
         self: Type,
-        request: Type
+        request: Type,
     ) -> None:
 
         self.request = request
@@ -93,3 +93,35 @@ class ViewSet:
     ) -> Type:
 
         return NotImplementedResponse(self.NOT_IMPLEMENTED_MESSEGE)
+
+    #
+    #
+    #
+
+    def get_context(
+        self: Type,
+    ) -> dict:
+
+        return {
+            'request': self.request
+        }
+
+    def render(
+        self: Type,
+        request: Type,
+        template_path: str,
+        context: dict = {},
+        encoding: str = 'utf-8',
+        headers: dict = {},
+        status: int = 200,
+    ) -> str:
+
+        return TemplateResponse(
+            request=request,
+            template_path=template_path,
+            context=context,
+            encoding=request.encoding,
+            headers=headers,
+            status=status,
+            template_paths=request.template_paths
+        )

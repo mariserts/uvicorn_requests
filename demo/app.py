@@ -5,20 +5,28 @@ from uvicorn_requests.routers.route import Route
 from .viewsets import HomePageViewSet
 
 
-routes = [
+ROUTES = [
     Route(r'', HomePageViewSet, name='home'),
+]
+
+
+TEMPLATE_PATHS = [
+    'demo/templates/'
 ]
 
 
 async def app(scope, receive, send):
 
-    request = Request(scope, receive)
+    request = Request(
+        scope,
+        receive,
+        encoding='utf-8',
+        template_paths=TEMPLATE_PATHS,
+    )
 
     assert request.type == 'http'
 
-    response = Router(
-        routes=routes
-    ).get_reponse(request)
+    response = Router(ROUTES).get_reponse(request)
 
     await send(response.start)
     await send(response.body)

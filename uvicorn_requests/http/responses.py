@@ -2,6 +2,9 @@ import json
 
 from typing import Any, List, Type, Union
 
+from ..template_engines.jinja2 import Jinja2TemplateEngine
+from ..conf import settings
+
 
 class Response:
 
@@ -178,6 +181,44 @@ class JSONResponse(Response):
 
 class TemplateResponse(Response):
 
+    def __init__(
+        self: Type,
+        request: Type,
+        template_path: str,
+        context: dict = {},
+        encoding: str = 'utf-8',
+        headers: dict = {},
+        status: int = 200,
+        template_paths: List[str] = [],
+    ) -> None:
+
+        self._encoding = encoding
+        self._headers = self.parse_headers(headers)
+        self._request = request
+        self._status = status
+        self._template_path = template_path
+        self._template_paths = template_paths
+        self._context = context
+
+    @property
+    def content(
+        self: Type
+    ) -> str:
+
+        context = self.context
+        context['request'] = self.request
+
+        return Jinja2TemplateEngine(
+            template_paths=self._template_paths
+        ).render(
+            self.template_path,
+            context
+        )
+
+    @property
+    def context(self):
+        return self._context
+
     @property
     def default_headers(self):
         return [
@@ -186,6 +227,10 @@ class TemplateResponse(Response):
                 str(f'text/html; charset={self._encoding}').encode()
             ]
         ]
+
+    @property
+    def template_path(self):
+        return self._template_path
 
 
 class BadRequestResponse(Response):
