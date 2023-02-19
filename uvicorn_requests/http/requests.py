@@ -22,10 +22,9 @@ class Request:
         self._template_paths = template_paths
 
     @property
-    def body(self):
-
-        if self.__body is not None:
-            return self.__body
+    def body(
+        self: Type,
+    ) -> bytes:
 
         body = b''
 
@@ -44,12 +43,12 @@ class Request:
                 parts = value.split('=')
                 out[parts[0]] = parts[1]
 
-        self.__body = out
-
-        return self.__body
+        return out
 
     @property
-    def cookies(self):
+    def cookies(
+        self: Type,
+    ) -> dict:
 
         value = self.headers.get('cookie', '')
         _cookies = value.split(';')
@@ -64,11 +63,16 @@ class Request:
         return cookies
 
     @property
-    def encoding(self):
+    def encoding(
+        self: Type,
+    ) -> str:
+
         return self._encoding
 
     @property
-    def headers(self):
+    def headers(
+        self: Type,
+    ) -> dict:
 
         _headers = self._scope['headers']
 
@@ -82,17 +86,29 @@ class Request:
         return headers
 
     @property
-    def method(self):
+    def method(
+        self: Type,
+    ) -> str:
+
         return self._scope['method'].lower()
 
     @property
-    def path(self):
+    def path(
+        self: Type,
+    ) -> str:
+
         return self._scope['path']
 
     @property
-    def template_paths(self):
+    def template_paths(
+        self: Type,
+    ) -> List[str]:
+
         return self._template_paths
 
     @property
-    def type(self):
+    def type(
+        self: Type,
+    ) -> str:
+
         return self._scope['type']

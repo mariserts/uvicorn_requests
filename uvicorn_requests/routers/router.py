@@ -85,9 +85,7 @@ class Router:
 
         try:
             response = getattr(
-                view(
-                    request
-                ),
+                view(),
                 request.method
             )(
                 request,

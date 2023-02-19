@@ -16,6 +16,7 @@ class ViewSet:
     HTTP_METHODS = [
         HTTP_METHOD_DELETE,
         HTTP_METHOD_GET,
+        HTTP_METHOD_HEAD,
         HTTP_METHOD_OPTIONS,
         HTTP_METHOD_PATCH,
         HTTP_METHOD_POST,
@@ -23,13 +24,6 @@ class ViewSet:
     ]
 
     NOT_IMPLEMENTED_MESSEGE = 'Method is not implemented'
-
-    def __init__(
-        self: Type,
-        request: Type,
-    ) -> None:
-
-        self.request = request
 
     def delete(
         self: Type,
@@ -94,17 +88,21 @@ class ViewSet:
 
         return NotImplementedResponse(self.NOT_IMPLEMENTED_MESSEGE)
 
-    #
-    #
-    #
+
+class TemplateViewSet(ViewSet):
+
+    HTTP_METHODS = [
+        ViewSet.HTTP_METHOD_GET,
+        ViewSet.HTTP_METHOD_HEAD,
+        ViewSet.HTTP_METHOD_OPTIONS,
+        ViewSet.HTTP_METHOD_POST,
+    ]
 
     def get_context(
         self: Type,
     ) -> dict:
 
-        return {
-            'request': self.request
-        }
+        return {}
 
     def render(
         self: Type,
@@ -115,6 +113,9 @@ class ViewSet:
         headers: dict = {},
         status: int = 200,
     ) -> str:
+
+        context = {'request': request}
+        context = {**context, **self.get_context()}
 
         return TemplateResponse(
             request=request,

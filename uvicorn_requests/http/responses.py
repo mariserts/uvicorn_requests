@@ -24,18 +24,27 @@ class Response:
         self._status = status
 
     @property
-    def body(self: Type,) -> dict:
+    def body(
+        self: Type,
+    ) -> dict:
+
         return {
             'type': 'http.response.body',
             'body': str.encode(self.content, self._encoding),
         }
 
     @property
-    def content(self: Type) -> bytes:
+    def content(
+        self: Type,
+    ) -> bytes:
+
         return self._content
 
     @property
-    def default_headers(self: Type) -> List[List[bytes]]:
+    def default_headers(
+        self: Type
+    ) -> List[List[bytes]]:
+
         return [
             [
                 b'content-type',
@@ -44,15 +53,24 @@ class Response:
         ]
 
     @property
-    def headers(self: Type) -> dict:
+    def headers(
+        self: Type
+    ) -> dict:
+
         return self._headers
 
     @property
-    def request(self: Type) -> Type:
+    def request(
+        self: Type
+    ) -> Type:
+
         return self._request
 
     @property
-    def start(self: dict) -> dict:
+    def start(
+        self: dict
+    ) -> dict:
+
         return {
             'type': 'http.response.start',
             'status': self.status,
@@ -60,21 +78,30 @@ class Response:
         }
 
     @property
-    def status(self: Type) -> int:
+    def status(
+        self: Type
+    ) -> int:
+
         return self._status
 
     #
     #
     #
 
-    def parse_headers(self: Type, headers_dict: dict) -> dict:
+    def parse_headers(
+        self: Type,
+        headers_dict: dict
+    ) -> dict:
+
         headers = []
         headers += self.default_headers
+
         for key, value in headers_dict.items():
             headers.append([
                 key.encode('utf-8', 'strict'),
                 value.encode('utf-8', 'strict')
             ])
+
         return headers
 
     #
@@ -156,7 +183,9 @@ class Response:
 class JSONResponse(Response):
 
     @property
-    def body(self: Type,) -> dict:
+    def body(
+        self: Type
+    ) -> dict:
 
         if isinstance(self.content, str) is False:
             content = json.dumps(self.content)
@@ -170,7 +199,10 @@ class JSONResponse(Response):
         }
 
     @property
-    def default_headers(self):
+    def default_headers(
+        self: Type
+    ) -> List[List[str]]:
+
         return [
             [
                 b'content-type',
@@ -216,11 +248,17 @@ class TemplateResponse(Response):
         )
 
     @property
-    def context(self):
+    def context(
+        self: Type
+    ) -> dict:
+
         return self._context
 
     @property
-    def default_headers(self):
+    def default_headers(
+        self: Type
+    ) -> List[List[str]]:
+
         return [
             [
                 b'content-type',
@@ -229,7 +267,10 @@ class TemplateResponse(Response):
         ]
 
     @property
-    def template_path(self):
+    def template_path(
+        self: Type
+    ) -> str:
+    
         return self._template_path
 
 

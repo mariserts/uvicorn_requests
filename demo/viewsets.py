@@ -1,9 +1,9 @@
 from typing import Type
 
-from uvicorn_requests.viewsets.viewset import ViewSet
+from uvicorn_requests.viewsets.viewset import TemplateViewSet
 
 
-class HomePageViewSet(ViewSet):
+class HomePageViewSet(TemplateViewSet):
 
     def get(
         self: Type,
