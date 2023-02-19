@@ -26,7 +26,7 @@ async def app(scope, receive, send):
 
     assert request.type == 'http'
 
-    response = Router(ROUTES).get_reponse(request)
+    response = Router(ROUTES).get_response(request)
 
     await send(response.start)
     await send(response.body)

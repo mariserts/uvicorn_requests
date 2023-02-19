@@ -2,8 +2,8 @@ import json
 
 from typing import Any, List, Type, Union
 
-from ..template_engines.jinja2 import Jinja2TemplateEngine
 from ..conf import settings
+from ..template_engines.jinja2 import Jinja2TemplateEngine
 
 
 class Response:
@@ -230,7 +230,15 @@ class TemplateResponse(Response):
         self._status = status
         self._template_path = template_path
         self._template_paths = template_paths
+        self._template_engine = settings.TEMPLATE_ENGINE
+        self._template_engine_class = settings.TEMPLATE_ENGINE_CLASS
         self._context = context
+
+        if self._template_engine is None:
+            self._template_engine = self._template_engine_class(
+                template_paths=self._template_paths
+            )
+            settings.TEMPLATE_ENGINE = self._template_engine
 
     @property
     def content(
@@ -240,9 +248,7 @@ class TemplateResponse(Response):
         context = self.context
         context['request'] = self.request
 
-        return Jinja2TemplateEngine(
-            template_paths=self._template_paths
-        ).render(
+        return self._template_engine.render(
             self.template_path,
             context
         )
@@ -270,7 +276,7 @@ class TemplateResponse(Response):
     def template_path(
         self: Type
     ) -> str:
-    
+
         return self._template_path
 
 

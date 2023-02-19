@@ -12,19 +12,14 @@ from ..http.responses import (
 
 class Router:
 
+    _cached_paths = {}
+
     def __init__(
         self: Type,
         routes: List[Type],
     ) -> None:
 
-        self._routes = routes
-
-    @property
-    def routes(
-        self: Type
-    ) -> List[Type]:
-
-        return self._routes
+        self.routes = routes
 
     def reverse(
         self: Type,
@@ -43,8 +38,12 @@ class Router:
         path: str,
     ) -> Type:
 
-        if path.endswith('/') is False:
-            path += '/'
+        # XXXX: Cache could take all memory because all paths are stored
+
+        try:
+            self._cached_paths[path]
+        except KeyError:
+            pass
 
         for route in self.routes:
 
@@ -54,14 +53,18 @@ class Router:
 
                 kwargs_match = re.search(route.pattern, path)
 
-                return {
+                self._cached_paths[path] = {
                     'route': route,
                     'kwargs': match.groupdict(),
                 }
 
-        return None
+                return self._cached_paths[path]
 
-    def get_reponse(
+        self._cached_paths[path] = None
+
+        return self._cached_paths[path]
+
+    def get_response(
         self: Type,
         request: Type,
     ) -> Type:

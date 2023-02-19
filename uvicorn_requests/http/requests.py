@@ -3,10 +3,16 @@ from typing import List, Type
 from uuid import uuid4
 from urllib import parse
 
+from ..conf import settings
+
 
 class Request:
 
     id = uuid4().hex
+
+    _cached_body = None
+    _cached_cookies = None
+    _cached_headers = None
 
     def __init__(
         self: Type,
@@ -17,14 +23,21 @@ class Request:
     ):
 
         self._body = body
-        self._encoding = encoding
         self._scope = scope
         self._template_paths = template_paths
+        self.settings = settings
+
+        self.encoding = encoding
+        self.method = self._scope['method'].lower()
+        self.type = self._scope['type']
 
     @property
     def body(
         self: Type,
     ) -> bytes:
+
+        if self._cached_body is not None:
+            return self._cached_body
 
         body = b''
 
@@ -43,12 +56,17 @@ class Request:
                 parts = value.split('=')
                 out[parts[0]] = parts[1]
 
-        return out
+        self._cached_body = out
+
+        return self._cached_body
 
     @property
     def cookies(
         self: Type,
     ) -> dict:
+
+        if self._cached_cookies is not None:
+            return self._cached_cookies
 
         value = self.headers.get('cookie', '')
         _cookies = value.split(';')
@@ -60,19 +78,17 @@ class Request:
                 parts = cookie.split('=')
                 cookies[parts[0].strip()] = parts[1].strip()
 
-        return cookies
+        self._cached_cookies = cookies
 
-    @property
-    def encoding(
-        self: Type,
-    ) -> str:
-
-        return self._encoding
+        return self._cached_cookies
 
     @property
     def headers(
         self: Type,
     ) -> dict:
+
+        if self._cached_headers is not None:
+            return self._cached_headers
 
         _headers = self._scope['headers']
 
@@ -83,21 +99,21 @@ class Request:
             value = header[1].decode('utf-8')
             headers[key] = value
 
-        return headers
+        self._cached_headers = headers
 
-    @property
-    def method(
-        self: Type,
-    ) -> str:
-
-        return self._scope['method'].lower()
+        return self._cached_headers
 
     @property
     def path(
         self: Type,
     ) -> str:
 
-        return self._scope['path']
+        path = self._scope['path']
+
+        if path.endswith('/') is False:
+            path += '/'
+
+        return path
 
     @property
     def template_paths(
@@ -105,10 +121,3 @@ class Request:
     ) -> List[str]:
 
         return self._template_paths
-
-    @property
-    def type(
-        self: Type,
-    ) -> str:
-
-        return self._scope['type']
