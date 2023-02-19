@@ -1,17 +1,19 @@
 # Uvicorn requests
 
-Trying to benchmark minimal server setup against Flask and Django
+Trying to benchmark minimal server setup against Flask, Django, NodeJS
 
 
-## Uvicorn / Gunicorn config
+## Benchmarks
+
+
+### Uvicorn / Gunicorn config
 - workers 1
 - keep-alive 5
 
 
-## Locust
+### Locust
 
 - 100 concurrent users
-- 10 spawn rate
 
 locustfile.py
 ```
@@ -25,15 +27,59 @@ class HelloWorld(HttpUser):
 ```
 
 
-## Uvicorn benchmark app
+### Uvicorn benchmark app
+
+- RPS ~1700
+- Response 95% percentile: 75ms
+- Response median: 55ms
+
 
 Run:
 ```
 uvicorn demo.app:app --workers 1
 ```
 
+### NodeJS benchmark app
 
-## Django benchmark app
+- RPS ~1750
+- Response 95% percentile: 63ms
+- Response median: 43ms
+
+Run
+```
+node app.js
+```
+
+app.js
+```
+const express = require('express');
+const app = express();
+
+
+app.set('view engine', 'ejs');
+
+
+app.get('/' , (req , res) => {
+    res.render('index' , {
+        request : req
+    });
+})
+
+app.listen(3000 , ()=>{
+    console.log('server is running on port 3000');
+})
+```
+
+index.ejs
+```
+<h1>Hello world</h1>
+<%= request %>
+```
+
+
+### Django benchmark app
+
+- RPS ~1000
 
 Run:
 ```
@@ -66,7 +112,9 @@ base.html
 {{ request }}
 ```
 
-## Flask benchmark app
+### Flask benchmark app
+
+- RPS ~1100
 
 Run:
 ```
