@@ -10,7 +10,6 @@ Trying to benchmark minimal server setup against Flask, Django, NodeJS
 - workers 1
 - keep-alive 5
 
-
 ### Locust
 
 - 100 concurrent users
@@ -26,13 +25,13 @@ class HelloWorld(HttpUser):
         self.client.get('/')
 ```
 
+### Uvicorn requests benchmark app
 
-### Uvicorn benchmark app
+App is located in /demo/
 
 - RPS ~1700
 - Response 95% percentile: 75ms
 - Response median: 55ms
-
 
 Run:
 ```
@@ -76,6 +75,31 @@ index.ejs
 <%= request %>
 ```
 
+### Flask benchmark app
+
+- RPS ~1100
+
+Run:
+```
+gunicorn app.app --workers 1 --keep-alive 5
+```
+
+app.py
+```
+from flask import Flask, render_template, request
+
+app = Flask(__name__)
+
+@app.route('/')
+def hello_world():
+    return render_template('index.html', request=request)
+```
+
+index.html
+```
+<h1>Hello world</h1>
+{{ request }}
+```
 
 ### Django benchmark app
 
@@ -107,32 +131,6 @@ urlpatterns = [
 ```
 
 base.html
-```
-<h1>Hello world</h1>
-{{ request }}
-```
-
-### Flask benchmark app
-
-- RPS ~1100
-
-Run:
-```
-gunicorn app.app --workers 1 --keep-alive 5
-```
-
-app.py
-```
-from flask import Flask, render_template, request
-
-app = Flask(__name__)
-
-@app.route('/')
-def hello_world():
-    return render_template('index.html', request=request)
-```
-
-index.html
 ```
 <h1>Hello world</h1>
 {{ request }}
