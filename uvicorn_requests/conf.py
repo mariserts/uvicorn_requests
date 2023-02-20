@@ -1,11 +1,36 @@
-from typing import Any, List, Type
+# -*- coding: utf-8 -*-
+from typing import Type
 
 
 class Settings:
 
+    _ROUTER = None
     _TEMPLATE_ENGINE = None
     _TEMPLATE_ENGINE_CLASS = None
     _TEMPLATE_PATHS = []
+
+    #
+    #
+    #
+
+    @property
+    def ROUTER(
+        self: Type
+    ) -> Type:
+
+        return self._ROUTER
+
+    @ROUTER.setter
+    def ROUTER(
+        self: Type,
+        value: Type,
+    ) -> None:
+
+        self._ROUTER = value
+
+    #
+    #
+    #
 
     @property
     def TEMPLATE_ENGINE(

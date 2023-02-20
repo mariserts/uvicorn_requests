@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from typing import List, Type
 
+from .conf import settings
 from .http.requests import Request
 from .routers.router import Router
 
@@ -24,6 +25,7 @@ async def app(
     scope: dict,
     receive: bytes,
     send: Type,
+    router_class: Type = Router,
     routes: List[Type] = [],
     template_paths: List[str] = [],
 ) -> None:
@@ -39,7 +41,10 @@ async def app(
         template_paths=template_paths,
     )
 
-    response = Router(routes).get_response(request)
+    if settings.ROUTER is None:
+        settings.ROUTER = router_class(routes)
+
+    response = settings.ROUTER.get_response(request)
 
     await send(response.start)
     await send(response.body)
