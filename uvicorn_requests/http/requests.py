@@ -1,9 +1,11 @@
+# -*- coding: utf-8 -*-
 from typing import List, Type
 
 from uuid import uuid4
 from urllib import parse
 
 from ..conf import settings
+from ..template_engines.jinja2 import Jinja2TemplateEngine
 
 
 class Request:
@@ -20,16 +22,20 @@ class Request:
         body: bytes,
         encoding: str = 'utf-8',
         template_paths: List[str] = [],
+        template_engine_class: Type = Jinja2TemplateEngine,
     ):
 
         self._body = body
         self._scope = scope
-        self._template_paths = template_paths
-        self.settings = settings
 
         self.encoding = encoding
         self.method = self._scope['method'].lower()
+        self.path = self.clean_path(self._scope['path'])
+        self.template_engine_class = template_engine_class
+        self.template_paths = template_paths
         self.type = self._scope['type']
+
+        self.settings = settings
 
     @property
     def body(
@@ -47,7 +53,7 @@ class Request:
             body = self._scope['query_string']
 
         decoded_body = body.decode(self.encoding, 'strict')
-        clean_string = urllib.parse.unquote(decoded_body)
+        clean_string = parse.unquote(decoded_body)
 
         out = {}
 
@@ -103,21 +109,12 @@ class Request:
 
         return self._cached_headers
 
-    @property
-    def path(
+    def clean_path(
         self: Type,
+        path: str
     ) -> str:
 
-        path = self._scope['path']
+        if path.endswith('/') is True:
+            return path
 
-        if path.endswith('/') is False:
-            path += '/'
-
-        return path
-
-    @property
-    def template_paths(
-        self: Type,
-    ) -> List[str]:
-
-        return self._template_paths
+        return path + '/'

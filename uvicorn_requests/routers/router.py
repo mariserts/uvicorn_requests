@@ -1,8 +1,8 @@
-from typing import List, Type
-
+# -*- coding: utf-8 -*-
 import re
 
-from ..exceptions import RouteNotFound
+from typing import List, Type
+
 from ..http.responses import (
     NotImplementedResponse,
     RouteNotFoundResponse,
@@ -12,8 +12,6 @@ from ..http.responses import (
 
 class Router:
 
-    _cached_paths = {}
-
     def __init__(
         self: Type,
         routes: List[Type],
@@ -21,29 +19,10 @@ class Router:
 
         self.routes = routes
 
-    def reverse(
-        self: Type,
-        name: str,
-        kwargs: dict
-    ) -> str:
-
-        for route in self.routes:
-            if route.name == name:
-                return route.reverse(kwargs)
-
-        raise RouteNotFound(name)
-
     def get_route_for_path(
         self: Type,
         path: str,
     ) -> Type:
-
-        # XXXX: Cache could take all memory because all paths are stored
-
-        try:
-            self._cached_paths[path]
-        except KeyError:
-            pass
 
         for route in self.routes:
 
@@ -51,18 +30,12 @@ class Router:
 
             if match is not None:
 
-                kwargs_match = re.search(route.pattern, path)
-
-                self._cached_paths[path] = {
+                return {
                     'route': route,
                     'kwargs': match.groupdict(),
                 }
 
-                return self._cached_paths[path]
-
-        self._cached_paths[path] = None
-
-        return self._cached_paths[path]
+        return None
 
     def get_response(
         self: Type,

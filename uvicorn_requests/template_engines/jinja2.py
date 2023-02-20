@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from typing import List, Type
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -35,10 +36,10 @@ class Jinja2TemplateEngine:
 
     def get_template(
         self: Type,
-        template_path: str,
+        template: str,
     ) -> Type:
 
-        return self.environment.get_template(template_path)
+        return self.environment.get_template(template)
 
     def render(
         self: Type,

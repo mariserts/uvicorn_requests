@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from typing import List, Type
 
 from ..http.responses import NotImplementedResponse, TemplateResponse
@@ -107,7 +108,7 @@ class TemplateViewSet(ViewSet):
     def render(
         self: Type,
         request: Type,
-        template_path: str,
+        template: str,
         context: dict = {},
         encoding: str = 'utf-8',
         headers: dict = {},
@@ -119,10 +120,9 @@ class TemplateViewSet(ViewSet):
 
         return TemplateResponse(
             request=request,
-            template_path=template_path,
+            template=template,
             context=context,
             encoding=request.encoding,
             headers=headers,
             status=status,
-            template_paths=request.template_paths
         )

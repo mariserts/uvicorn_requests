@@ -1,9 +1,7 @@
+# -*- coding: utf-8 -*-
 import json
 
 from typing import Any, List, Type, Union
-
-from ..conf import settings
-from ..template_engines.jinja2 import Jinja2TemplateEngine
 
 
 class Response:
@@ -17,11 +15,11 @@ class Response:
         status: int = 200,
     ) -> None:
 
-        self._content = content
-        self._encoding = encoding
+        self.content = content
+        self.encoding = encoding
         self._headers = self.parse_headers(headers)
-        self._request = request
-        self._status = status
+        self.request = request
+        self.status = status
 
     @property
     def body(
@@ -30,15 +28,8 @@ class Response:
 
         return {
             'type': 'http.response.body',
-            'body': str.encode(self.content, self._encoding),
+            'body': str.encode(self.content, self.encoding),
         }
-
-    @property
-    def content(
-        self: Type,
-    ) -> bytes:
-
-        return self._content
 
     @property
     def default_headers(
@@ -48,7 +39,7 @@ class Response:
         return [
             [
                 b'content-type',
-                str(f'text/plain; charset={self._encoding}').encode()
+                str(f'text/plain; charset={self.encoding}').encode()
             ]
         ]
 
@@ -60,13 +51,6 @@ class Response:
         return self._headers
 
     @property
-    def request(
-        self: Type
-    ) -> Type:
-
-        return self._request
-
-    @property
     def start(
         self: dict
     ) -> dict:
@@ -76,13 +60,6 @@ class Response:
             'status': self.status,
             'headers': self.headers,
         }
-
-    @property
-    def status(
-        self: Type
-    ) -> int:
-
-        return self._status
 
     #
     #
@@ -139,10 +116,10 @@ class Response:
             cookie_value += f'; SameSite={same_site}'
 
         if secure is True:
-            cookie_value += f'; Secure'
+            cookie_value += '; Secure'
 
         if http_only is True:
-            cookie_value += f'; HttpOnly'
+            cookie_value += '; HttpOnly'
 
         return [
             'Set-Cookie'.encode('utf-8', 'strict'),
@@ -195,7 +172,7 @@ class JSONResponse(Response):
 
         return {
             'type': 'http.response.body',
-            'body': str.encode(content, self._encoding),
+            'body': str.encode(content, self.encoding),
         }
 
     @property
@@ -206,7 +183,7 @@ class JSONResponse(Response):
         return [
             [
                 b'content-type',
-                str.encode(f'application/json; charset={self._encoding}')
+                str.encode(f'application/json; charset={self.encoding}')
             ]
         ]
 
@@ -216,29 +193,25 @@ class TemplateResponse(Response):
     def __init__(
         self: Type,
         request: Type,
-        template_path: str,
+        template: str,
         context: dict = {},
         encoding: str = 'utf-8',
         headers: dict = {},
         status: int = 200,
-        template_paths: List[str] = [],
     ) -> None:
 
-        self._encoding = encoding
+        self.context = context
+        self.encoding = encoding
         self._headers = self.parse_headers(headers)
-        self._request = request
-        self._status = status
-        self._template_path = template_path
-        self._template_paths = template_paths
-        self._template_engine = settings.TEMPLATE_ENGINE
-        self._template_engine_class = settings.TEMPLATE_ENGINE_CLASS
-        self._context = context
+        self.request = request
+        self.status = status
+        self.template = template
 
-        if self._template_engine is None:
-            self._template_engine = self._template_engine_class(
-                template_paths=self._template_paths
+        if request.settings.TEMPLATE_ENGINE is None:
+            request.settings.TEMPLATE_ENGINE = request.template_engine_class(
+                encoding=request.encoding,
+                template_paths=request.template_paths,
             )
-            settings.TEMPLATE_ENGINE = self._template_engine
 
     @property
     def content(
@@ -248,17 +221,10 @@ class TemplateResponse(Response):
         context = self.context
         context['request'] = self.request
 
-        return self._template_engine.render(
-            self.template_path,
+        return self.request.settings.TEMPLATE_ENGINE.render(
+            self.template,
             context
         )
-
-    @property
-    def context(
-        self: Type
-    ) -> dict:
-
-        return self._context
 
     @property
     def default_headers(
@@ -268,16 +234,9 @@ class TemplateResponse(Response):
         return [
             [
                 b'content-type',
-                str(f'text/html; charset={self._encoding}').encode()
+                str(f'text/html; charset={self.encoding}').encode()
             ]
         ]
-
-    @property
-    def template_path(
-        self: Type
-    ) -> str:
-
-        return self._template_path
 
 
 class BadRequestResponse(Response):

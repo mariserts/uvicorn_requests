@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import re
 
 from typing import Type
@@ -41,15 +42,3 @@ class Route:
         if pattern == r'':
             pattern = r'/'
         return pattern
-
-    # def reverse(
-    #     self: Type,
-    #     kwargs: dict={}
-    # ) -> str:
-    #
-    #     url = str(self.pattern.pattern)
-    #
-    #     for key, value in kwargs.items():
-    #         url = re.sub(rf'\(\?P\<{key}\>[^\)]+\)', str(value), url)
-    #
-    #     return url
