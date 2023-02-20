@@ -1,6 +1,7 @@
-from uvicorn_requests.http.requests import Request
-from uvicorn_requests.routers.router import Router
+from typing import Type
+
 from uvicorn_requests.routers.route import Route
+from uvicorn_requests.app import app as uvicorn_requests_app
 
 from .viewsets import HomePageViewSet
 
@@ -15,18 +16,16 @@ TEMPLATE_PATHS = [
 ]
 
 
-async def app(scope, receive, send):
+async def app(
+    scope: dict,
+    receive: bytes,
+    send: Type
+) -> None:
 
-    request = Request(
+    await uvicorn_requests_app(
         scope,
         receive,
-        encoding='utf-8',
-        template_paths=TEMPLATE_PATHS,
+        send,
+        routes=ROUTES,
+        template_paths=TEMPLATE_PATHS
     )
-
-    assert request.type == 'http'
-
-    response = Router(ROUTES).get_response(request)
-
-    await send(response.start)
-    await send(response.body)
