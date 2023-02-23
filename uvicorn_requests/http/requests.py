@@ -101,9 +101,7 @@ class Request:
         headers = {}
 
         for header in _headers:
-            key = header[0].decode('utf-8')
-            value = header[1].decode('utf-8')
-            headers[key] = value
+            headers[header[0].decode('utf-8')] = header[1].decode('utf-8')
 
         self._cached_headers = headers
 

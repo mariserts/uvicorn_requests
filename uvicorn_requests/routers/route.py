@@ -13,32 +13,16 @@ class Route:
         name: str = None
     ) -> None:
 
-        self._pattern = re.compile(self.clean_pattern(pattern))
-        self._view = view
-        self._name = name
-
-    @property
-    def name(
-        self: Type
-    ) -> str:
-        return self._name
-
-    @property
-    def pattern(
-        self: Type
-    ) -> str:
-        return re.compile(self._pattern)
-
-    @property
-    def view(
-        self: Type
-    ) -> Type:
-        return self._view
+        self.name = name
+        self.pattern = re.compile(self.clean_pattern(pattern))
+        self.view = view
 
     def clean_pattern(
         self: Type,
         pattern: str,
     ) -> str:
+
         if pattern == r'':
             pattern = r'/'
+
         return pattern

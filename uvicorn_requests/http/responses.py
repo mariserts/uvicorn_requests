@@ -269,6 +269,22 @@ class NotImplementedResponse(Response):
         super().__init__(None, content, status=501)
 
 
+class RedirectResponse(Response):
+
+    def __init__(
+        self: Type,
+        redirect_url: str,
+        permanent: bool = False,
+    ) -> Type:
+
+        super().__init__(
+            None,
+            '',
+            status=301 if permanent else 302,
+            headers={'Location': self.redirect_url}
+        )
+
+
 class RouteNotFoundResponse(Response):
 
     def __init__(
