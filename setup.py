@@ -6,7 +6,7 @@ setup(
     name="uvicorn_requests",
 
     # Version number (initial):
-    version="0.0.1",
+    version="1.0.0",
 
     # Application author details:
     author="Maris Erts",
