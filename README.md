@@ -1,6 +1,12 @@
 # Uvicorn requests
 
 
+## Install from github
+
+```
+pip install https://github.com/mariserts/uvicorn_requests/archive/refs/heads/main.zip
+```
+
 ## Minimal app
 
 app.py
@@ -9,12 +15,7 @@ app.py
 from uvicorn_requests.app import app as uvicorn_requests_app
 from uvicorn_requests.http.responses import JSONResponse
 from uvicorn_requests.routers.route import Route
-from uvicorn_requests.viewsets.viewset import ViewSet, TemplateViewSet
-
-
-class HtmlViewSet(TemplateViewSet):
-    def get(self, request):
-        return self.render(request, 'base.html', context=self.get_context())
+from uvicorn_requests.viewsets.viewset import ViewSet
 
 
 class ApiViewSet(ViewSet):
@@ -23,13 +24,7 @@ class ApiViewSet(ViewSet):
 
 
 ROUTES = [
-    Route(r'/api/', ApiViewSet, name='api'),
-    Route(r'/', HtmlViewSet, name='html'),
-]
-
-
-TEMPLATE_PATHS = [
-    '/templates/'
+    Route(r'/', ApiViewSet, name='api'),
 ]
 
 
@@ -39,7 +34,6 @@ async def app(scope, receive, send):
         receive,
         send,
         routes=ROUTES,
-        template_paths=TEMPLATE_PATHS
     )
 ```
 
