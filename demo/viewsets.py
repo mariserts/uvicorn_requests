@@ -47,3 +47,17 @@ class JSONDetailViewSet(TemplateViewSet):
                 'pk': pk
             }
         )
+
+
+class PageViewSet(TemplateViewSet):
+
+    def get(
+        self: Type,
+        request: Type
+    ):
+
+        return self.render(
+            request,
+            'base2.html',
+            context=self.get_context(),
+        )

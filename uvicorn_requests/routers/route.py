@@ -22,7 +22,7 @@ class Route:
         pattern: str,
     ) -> str:
 
-        if pattern == r'':
-            pattern = r'/'
+        if pattern != r'':
+            return pattern
 
-        return pattern
+        return r'/'
