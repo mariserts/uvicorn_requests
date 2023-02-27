@@ -115,8 +115,7 @@ class TemplateViewSet(ViewSet):
         status: int = 200,
     ) -> str:
 
-        context = {'request': request}
-        context = {**context, **self.get_context()}
+        context['request'] = request
 
         return TemplateResponse(
             request=request,
