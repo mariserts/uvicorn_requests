@@ -115,8 +115,6 @@ class TemplateViewSet(ViewSet):
         status: int = 200,
     ) -> str:
 
-        context['request'] = request
-
         return TemplateResponse(
             request=request,
             template=template,
